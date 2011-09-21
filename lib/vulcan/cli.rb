@@ -123,9 +123,8 @@ update the build server
           file.puts ".env"
           file.puts "node_modules"
         end
-        system "ls -la"
-        system "git add ."
-        system "git commit -m commit"
+        system "git add . >/dev/null"
+        system "git commit -m commit >/dev/null"
         system "git push heroku -f master"
 
         %x{ env BUNDLE_GEMFILE= heroku config:add SECRET=#{config[:secret]} SPAWN_ENV=heroku HEROKU_APP=#{config[:app]} HEROKU_API_KEY=#{api_key} 2>&1 }
