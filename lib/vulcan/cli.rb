@@ -25,11 +25,11 @@ if no COMMAND is specified, a sensible default will be chosen for you
   def build
     app = read_config[:app] || "need a server first, use vulcan create"
 
-    command = options[:command] || "./configure --prefix #{prefix} && make install"
     name    = options[:name]    || File.basename(Dir.pwd)
     output  = options[:output]  || "/tmp/#{name}.tgz"
     prefix  = options[:prefix]  || "/app/vendor/#{name}"
     source  = options[:source]  || Dir.pwd
+    command = options[:command] || "./configure --prefix #{prefix} && make install"
     server  = URI.parse(ENV["MAKE_SERVER"] || "http://#{app}.herokuapp.com")
 
     Dir.mktmpdir do |dir|
