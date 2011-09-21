@@ -57,6 +57,7 @@ app.post('/make', function(request, response, next) {
 
               ls.on('error', function(error) {
                 console.log('error: ' + error);
+                response.end();
               });
 
               ls.on('data', function(data) {
@@ -64,12 +65,11 @@ app.post('/make', function(request, response, next) {
               });
 
               ls.on('exit', function(code) {
+                response.header('X-Make-Id', id);
                 response.end();
               });
             }
           );
-
-          response.header('X-Make-Id', id);
         });
       }
     });
