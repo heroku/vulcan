@@ -13,7 +13,7 @@ require "couchrest"
 require "fileutils"
 require "tmpdir"
 
-db = CouchRest.database!(ENV["CLOUDANT_URL"] + ":5984/make")
+db = CouchRest.database!(ENV["CLOUDANT_URL"] + "/make")
 
 Dir.mktmpdir do |dir|
   Dir.chdir(dir) do
