@@ -12,7 +12,7 @@ Gem::Specification.new do |gem|
   gem.description = gem.summary
   gem.executables = "vulcan"
 
-  gem.files = Dir["**/*"].select { |d| d =~ %r{^(README|bin/|data/|ext/|lib/|spec/|test/)} }
+  gem.files = Dir["**/*"].select { |d| d =~ %r{^(README|bin/|data/|ext/|lib/|server/|spec/|test/)} }
 
   gem.add_dependency "multipart-post", "~> 1.1.3"
   gem.add_dependency "rest-client",    "~> 1.6.7"
