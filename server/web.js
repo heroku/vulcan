@@ -17,12 +17,17 @@ var app = express.createServer(
 var couchdb_url = require('url').parse(process.env.CLOUDANT_URL);
 
 var couchdb_options = couchdb_url.auth ?
-  { auth: { username: couchdb_url.auth.split(':')[0], password: couchdb_url.auth.split(':')[1] } } :
+  {
+    auth: { username: couchdb_url.auth.split(':')[0], password: couchdb_url.auth.split(':')[1] }
+  } :
   { }
 
-var db = new(cradle.Connection)(couchdb_url.host, couchdb_url.port || 5984, couchdb_options).database('make');
+var db = new(cradle.Connection)(couchdb_url.hostname, couchdb_url.port || 5984, couchdb_options).database('make');
 
-db.create();
+db.create(function(err, data) {
+  console.log('cerr: %s', err);
+  console.log('cdat: %s', data);
+});
 
 app.post('/make', function(request, response, next) {
   if (! request.form) {
