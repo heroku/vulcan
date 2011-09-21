@@ -1,0 +1,12 @@
+{
+  "name":        "heroku-make",
+  "version":     "0.0.1",
+  "dependencies": [
+    "connect-form",
+    "cradle",
+    "express",
+    "knox",
+    "node-uuid",
+    "restler"
+  ]
+}

@@ -1,0 +1,194 @@
+== 1.1.2 - 2011-07-18
+
+* Minor changes
+  * Added `as_couch_json` method. If available, will be called before sending document to JSON encoder.
+
+== 1.1.1 - 2011-07-04
+
+* Urgent change
+  * Ensuring attributes hash initalized on use to avoid issues when initializer is overwritten.
+
+== 1.1.0 - 2011-06-25
+
+* Minor changes
+  * Refactored basic CouchRest API (get, post, etc.) to pass-through RestClient and MultiJSON options, including headers.
+  * CouchRest::Attributes module created to make attribute related methods independent.
+
+== 1.1.0.pre3 - 2011-06-06
+
+* Major changes
+  * CouchRest::Response removed
+  * CouchRest::Document now forwards key Hash methods (instead of inheritance) (thanks @karmi for prompting the discussion: https://github.com/crx/tire/commit/abf491d0035843a0a7395c8c32b9b7c2120071f9)
+  * Support multiple JSON gems with multi_json (thanks chrisdurtschi)
+
+== 1.1.0.pre2 - 2011-04-08
+
+* Major changes
+  * Time#to_json monkey patch removed! Standard JSON methods now used instead.
+
+* Minor alterations
+  * Named doc replication (thanks @ahamid)
+  * Database#update_doc no longer requires document to be returned from block (thanks @ferrous26)
+  * Streamer now available for all queries that return multiple documents (thanks @pcapr for pointer)
+  * Streamer#view method removed, use Database.view with block
+  * Database#changes method added (with streamer option)
+  * Added :allow_nil option when creating views
+  * Bug fix: only symbols can be passed as view options (helps fix auto :reduce option)
+
+WARNING: If you depend on ordering by Time, this release may cause issues on old databases! 
+Either update your documents to use the new format (JSON standard), or use Javascript's Date.parse 
+method in your views. Also, use Time#utc to ensure universal ordering regardless of time
+zone. (CouchRest Model does this automatically.)
+
+== 1.0.2
+
+* Minor enhancements
+  * Bundler
+  * Dependency versions upgrade
+  * Removed reduce option from view's defaults. Now detected according to presence of reduce function.
+  * Design#has_view? and Design#can_reduce_view? now available publically
+
+== 1.0.1
+
+* Minor enhancements
+	* rest-client version mismatch between couchrest.rb & gemspec
+  * json 1.4.X series re-enabled as tests now pass with v.1.4.6
+
+== 1.0.0
+
+* Major enhancements
+  * Moved ExtendedDocument and friends into own library, couchrest_extended_document. (Sam Lown)
+  * Removed HttpAbstraction component for direct interface with RestClient. (Sam Lown)
+  * Changed version to more conventional format starting from 1.0.0 to avoid ambiguity issues with order. (Sam Lown)
+
+== 0.38
+
+* Major enhancements
+	* Add create_target option to Database#replicate_to and #replicate_from. http://github.com/couchrest/couchrest/issues/#issue/26 (Alexander Uvarov) 
+  * Removing unused core extensions and moving extlib_inhertiable_* methods to use couchrest_inheritable_* 
+    to avoid conflicts with Rails. (Geoff Buesing)
+
+* Minor enhancements
+  * Support for CouchDB 1.0
+  * Added Document#id= support (issue detected by Rory Franklin with RSpec model stubs)
+  * Fixing issues with CouchDB 1.0 and RestClient
+
+== 0.37
+
+* Minor enhancements
+  * Added gemspec (needed for Bundler install) (Tapajós)
+
+== 0.36
+
+* Major enhancements
+  * Adds support for continuous replication (sauy7)
+  * Automatic Type Casting (Alexander Uvarov, Sam Lown, Tim Heighes, Will Leinweber)
+  * Added a search method to CouchRest:Database to search the documents in a given database. (Dave Farkas, Arnaud Berthomier, John Wood)
+  
+* Minor enhancements
+  * Provide a description of the timeout error (John Wood)
+
+== 0.35
+
+* Major enhancements
+  * CouchRest::ExtendedDocument allow chaining the inherit class callback (Kenneth Kalmer) - http://github.com/couchrest/couchrest/issues#issue/8
+
+* Minor enhancements
+  * Fix attachment bug (Johannes Jörg Schmidt)
+  * Fix create database exception bug (Damien Mathieu)
+  * Compatible with restclient >= 1.4.0 new responses (Julien Kirch)
+  * Bug fix: Attribute protection no longer strips attributes coming from the database (Will Leinweber)
+  * Bug fix: Remove double CGI escape when PUTting an attachment (nzoschke)
+  * Bug fix: Changing Class proxy to set database on result sets (Peter Gumeson)
+  * Bug fix: Updated time regexp (Nolan Darilek)
+  * Added an update_doc method to database to handle conflicts during atomic updates. (Pierre Larochelle)
+  * Bug fix: http://github.com/couchrest/couchrest/issues/#issue/2 (Luke Burton)
+
+== 0.34
+
+* Major enhancements
+
+  * Added support for https database URIs. (Mathias Meyer)
+  * Changing some validations to be compatible with activemodel. (Marcos Tapajós)
+  * Adds attribute protection to properties. (Will Leinweber)
+  * Improved CouchRest::Database#save_doc, added "batch" mode to significantly speed up saves at cost of lower durability gurantees. (Igal Koshevoy)
+  * Added CouchRest::Database#bulk_save_doc and #batch_save_doc as human-friendlier wrappers around #save_doc. (Igal Koshevoy)
+  
+* Minor enhancements 
+  
+  * Fix content_type handling for attachments
+  * Fixed a bug in the pagination code that caused it to paginate over records outside of the scope of the view parameters.(John Wood)
+  * Removed amount_pages calculation for the pagination collection, since it cannot be reliably calculated without a view.(John Wood)
+  * Bug fix: http://github.com/couchrest/couchrest/issues/#issue/2 (Luke Burton)
+  * Bug fix: http://github.com/couchrest/couchrest/issues/#issue/1 (Marcos Tapajós)
+  * Removed the Database class deprecation notices (Matt Aimonetti)
+  * Adding support to :cast_as => 'Date'.  (Marcos Tapajós)
+  * Improve documentation  (Marcos Tapajós)
+  * Streamer fixes (Julien Sanchez)
+  * Fix Save on Document & ExtendedDocument crashed if bulk (Julien Sanchez)
+  * Fix Initialization of ExtendentDocument model shouldn't failed on a nil value in argument (deepj)
+  * Change to use Jeweler and Gemcutter (Marcos Tapajós)
+
+== 0.33
+
+* Major enhancements
+
+  * Added a new Rack logger middleware letting you log/save requests/queries (Matt Aimonetti)
+  
+* Minor enhancements 
+  
+  * Added #amount_pages to a paginated result array (Matt Aimonetti)
+  * Ruby 1.9.2 compatible (Matt Aimonetti)
+  * Added a property? method for property cast as :boolean (John Wood)
+  * Added an option to force the deletion of a attachments (bypass 409s) (Matt Aimonetti)
+  * Created a new abstraction layer for the REST API (Matt Aimonetti)
+  * Bug fix: made ExtendedDocument#all compatible with Couch 0.10 (tc)
+
+== 0.32
+  
+* Major enhancements
+
+  * ExtendedDocument.get doesn't raise an exception anymore. If no documents are found nil is returned.
+  * ExtendedDocument.get! works the say #get used to work and will raise an exception if a document isn't found.
+  
+* Minor enhancements  
+   
+  * Bug fix: Model.all(:keys => [1,2]) was not working (Matt Aimonetti)
+  * Added ValidationErrors#count in order to play nicely with Rails (Peter Wagenet)
+  * Bug fix: class proxy design doc refresh (Daniel Kirsh)
+  * Bug fix: the count method on the proxy collection was missing (Daniel Kirsch)
+  * Added #amount_pages to a paginated collection. (Matt Aimonetti)
+
+== 0.31
+
+* Major enhancements
+
+  * Created an abstraction HTTP layer to support different http adapters (Matt Aimonetti)
+  * Added ExtendedDocument.create({}) and #create!({}) so you don't have to do Model.new.create (Matt Aimonetti)
+  
+* Minor enhancements
+  
+  * Added an init.rb file for easy usage as a Rails plugin (Aaron Quint)
+  * Bug fix: pagination shouldn't die on empty results (Arnaud Berthomier)
+  * Optimized ExtendedDocument.count to run about 3x faster (Matt Aimonetti)
+  * Added Float casting (Ryan Felton & Matt Aimonetti)
+
+== 0.30
+ 
+* Major enhancements
+ 
+  * Added support for pagination (John Wood)
+  * Improved performance when initializing documents with timestamps (Matt Aimonetti)
+ 
+* Minor enhancements
+ 
+  * Extended the API to retrieve an attachment URI (Matt Aimonetti)
+  * Bug fix: default value should be able to be set as false (Alexander Uvarov)
+  * Bug fix: validates_is_numeric should be able to properly validate a Float instance (Rob Kaufman)
+  * Bug fix: fixed the Timeout implementation (Seth Falcon)
+  
+  
+---
+
+Unfortunately, before 0.30 we did not keep a track of the modifications made to CouchRest.
+You can see the full commit history on GitHub: http://github.com/couchrest/couchrest/commits/master/

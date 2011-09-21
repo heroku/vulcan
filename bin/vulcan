@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+require "net/http/post/multipart"
+require "tmpdir"
+require "uri"
+require "vulcan/cli"
+
+Vulcan::CLI.start
+

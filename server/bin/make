@@ -1,0 +1,39 @@
+#!/usr/bin/env ruby
+
+ENV["GEM_HOME"] = File.expand_path("../../vendor/gems", __FILE__)
+ENV["GEM_PATH"] = File.expand_path("../../vendor/gems", __FILE__)
+
+require "rubygems"
+
+id  = ARGV.shift
+command = ARGV.shift
+prefix = ARGV.shift
+
+require "couchrest"
+require "fileutils"
+require "tmpdir"
+
+db = CouchRest.database!(ENV["CLOUDANT_URL"] + ":5984/make")
+
+Dir.mktmpdir do |dir|
+  Dir.chdir(dir) do
+    doc = db.get(id)
+
+    File.open("input.tgz", "wb") do |file|
+      file.print doc.fetch_attachment("input")
+    end
+
+    FileUtils.mkdir_p "input"
+
+    Dir.chdir("input") do
+      %x{ tar xzf ../input.tgz 2>&1 }
+      system command
+    end
+
+    Dir.chdir(prefix) do
+      %x{ tar czf #{dir}/output.tgz * 2>&1 }
+    end
+
+    doc.put_attachment("output", File.open("#{dir}/output.tgz"))
+  end
+end
