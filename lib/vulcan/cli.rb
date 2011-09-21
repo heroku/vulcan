@@ -99,9 +99,14 @@ update the build server
 
     File.open(File.expand_path("~/.heroku/plugins/heroku-credentials/init.rb"), "w") do |file|
       file.puts <<-CONTENTS
+        class Heroku::Auth
+          def self.api_key
+            Heroku::Client.auth(user, password, host)["api_key"]
+          end
+        end
         class Heroku::Command::Credentials < Heroku::Command::Base
           def index
-            puts Heroku::Auth.password
+            puts Heroku::Auth.api_key
           end
         end
       CONTENTS
