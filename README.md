@@ -6,14 +6,14 @@ A build server in the cloud.
 
     $ vulcan help
     Tasks:
-      vulcan build [COMMAND]  # build a piece of software for the heroku cloud using COMMAND as a build command if no COMMAND is...
+      vulcan build            # build a piece of software for the heroku cloud using COMMAND as a build command if no COMMAND is...
       vulcan create APP_NAME  # create a build server on Heroku
       vulcan help [TASK]      # Describe available tasks or one specific task
       vulcan update           # update the build server
 
     $ vulcan help build
     Usage:
-      vulcan build [COMMAND]
+      vulcan build
 
     Options:
       -c, [--command=COMMAND]  # the command to run for compilation
