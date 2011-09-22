@@ -37,43 +37,47 @@ app.post('/make', function(request, response, next) {
       if (err) {
         next(err);
       } else {
-        var id      = uuid();
-        var command = fields.command;
-        var prefix  = fields.prefix;
+        if (fields.secret != process.env.SECRET) {
+          response.send(500);
+        } else {
+          var id      = uuid();
+          var command = fields.command;
+          var prefix  = fields.prefix;
 
-        var doc = db.save(id, { command:command, prefix:prefix }, function(err, doc) {
-          console.log('err: %s', sys.inspect(err));
-          console.log('doc: %s', sys.inspect(doc));
+          var doc = db.save(id, { command:command, prefix:prefix }, function(err, doc) {
+            console.log('err: %s', sys.inspect(err));
+            console.log('doc: %s', sys.inspect(doc));
 
-          db.saveAttachment(
-            doc.id,
-            doc.rev,
-            'input',
-            'application/octet-stream',
-            fs.createReadStream(files.code.path),
-            function(err, data) {
-              var ls = spawner.spawn('bin/make ' + id, function(err) {
-                console.log('couldnt spawn: ' + err);
-              });
+            db.saveAttachment(
+              doc.id,
+              doc.rev,
+              'input',
+              'application/octet-stream',
+              fs.createReadStream(files.code.path),
+              function(err, data) {
+                var ls = spawner.spawn('bin/make ' + id, function(err) {
+                  console.log('couldnt spawn: ' + err);
+                });
 
-              ls.on('error', function(error) {
-                response.writeHead(500);
-                console.log('error: ' + error);
-                response.end();
-              });
+                ls.on('error', function(error) {
+                  response.writeHead(500);
+                  console.log('error: ' + error);
+                  response.end();
+                });
 
-              ls.on('data', function(data) {
-                response.write(data);
-              });
+                ls.on('data', function(data) {
+                  response.write(data);
+                });
 
-              ls.on('exit', function(code) {
-                response.end();
-              });
-            }
-          );
+                ls.on('exit', function(code) {
+                  response.end();
+                });
+              }
+            );
 
-          response.header('X-Make-Id', id);
-        });
+            response.header('X-Make-Id', id);
+          });
+        }
       }
     });
   }

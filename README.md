@@ -33,7 +33,7 @@ A build server in the cloud.
     $ vulcan create vulcan-david
     Creating vulcan-david... done, stack is cedar
     http://vulcan-david.herokuapp.com/ | git@heroku.com:vulcan-david.git
-    ...REDACTED
+    ...
 
 ### Build
 

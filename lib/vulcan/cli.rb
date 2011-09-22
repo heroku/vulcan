@@ -25,10 +25,10 @@ if no COMMAND is specified, a sensible default will be chosen for you
   def build
     app = read_config[:app] || "need a server first, use vulcan create"
 
-    name    = options[:name]    || File.basename(Dir.pwd)
+    source  = options[:source]  || Dir.pwd
+    name    = options[:name]    || File.basename(source)
     output  = options[:output]  || "/tmp/#{name}.tgz"
     prefix  = options[:prefix]  || "/app/vendor/#{name}"
-    source  = options[:source]  || Dir.pwd
     command = options[:command] || "./configure --prefix #{prefix} && make install"
     server  = URI.parse(ENV["MAKE_SERVER"] || "http://#{app}.herokuapp.com")
 
@@ -41,7 +41,8 @@ if no COMMAND is specified, a sensible default will be chosen for you
         request = Net::HTTP::Post::Multipart.new "/make",
           "code" => UploadIO.new(input, "application/octet-stream", "input.tgz"),
           "command" => command,
-          "prefix" => prefix
+          "prefix" => prefix,
+          "secret" => config[:secret]
 
         puts ">> Building with: #{command}"
         response = Net::HTTP.start(server.host, server.port) do |http|
