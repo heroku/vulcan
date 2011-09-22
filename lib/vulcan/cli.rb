@@ -9,7 +9,7 @@ require "yaml"
 
 class Vulcan::CLI < Thor
 
-  desc "build [COMMAND]", <<-DESC
+  desc "build", <<-DESC
 build a piece of software for the heroku cloud using COMMANd as a build command
 if no COMMAND is specified, a sensible default will be chosen for you
 
