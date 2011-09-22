@@ -24,10 +24,7 @@ var couchdb_options = couchdb_url.auth ?
 
 var db = new(cradle.Connection)(couchdb_url.hostname, couchdb_url.port || 5984, couchdb_options).database('make');
 
-db.create(function(err, data) {
-  console.log('cerr: %s', err);
-  console.log('cdat: %s', data);
-});
+db.create();
 
 app.post('/make', function(request, response, next) {
   if (! request.form) {
@@ -45,9 +42,6 @@ app.post('/make', function(request, response, next) {
           var prefix  = fields.prefix;
 
           var doc = db.save(id, { command:command, prefix:prefix }, function(err, doc) {
-            console.log('err: %s', sys.inspect(err));
-            console.log('doc: %s', sys.inspect(doc));
-
             db.saveAttachment(
               doc.id,
               doc.rev,
