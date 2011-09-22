@@ -6,7 +6,7 @@ A build server in the cloud.
 
     $ vulcan help
     Tasks:
-      vulcan build [COMMAND]  # build a piece of software for the heroku cloud using COMMANd as a build command if no COMMAND is...
+      vulcan build [COMMAND]  # build a piece of software for the heroku cloud using COMMAND as a build command if no COMMAND is...
       vulcan create APP_NAME  # create a build server on Heroku
       vulcan help [TASK]      # Describe available tasks or one specific task
       vulcan update           # update the build server
@@ -23,7 +23,7 @@ A build server in the cloud.
       -s, [--source=SOURCE]    # the source directory to build from
       -v, [--verbose]          # show the full build output
 
-    build a piece of software for the heroku cloud using COMMANd as a build command
+    build a piece of software for the heroku cloud using COMMAND as a build command
     if no COMMAND is specified, a sensible default will be chosen for you
 
 ## Examples
