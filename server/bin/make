@@ -6,8 +6,6 @@ ENV["GEM_PATH"] = File.expand_path("../../vendor/gems", __FILE__)
 require "rubygems"
 
 id  = ARGV.shift
-command = ARGV.shift
-prefix = ARGV.shift
 
 require "couchrest"
 require "fileutils"
@@ -18,6 +16,9 @@ db = CouchRest.database!(ENV["CLOUDANT_URL"] + "/make")
 Dir.mktmpdir do |dir|
   Dir.chdir(dir) do
     doc = db.get(id)
+
+    command = doc["command"]
+    prefix = doc["prefix"]
 
     File.open("input.tgz", "wb") do |file|
       file.print doc.fetch_attachment("input")
@@ -34,6 +35,13 @@ Dir.mktmpdir do |dir|
       %x{ tar czf #{dir}/output.tgz * 2>&1 }
     end
 
-    doc.put_attachment("output", File.open("#{dir}/output.tgz"))
+    retries = 0
+    begin
+      doc.put_attachment("output", File.open("#{dir}/output.tgz"))
+    rescue RestClient::Conflict
+      retries += 1
+      retry if retries < 3
+    end
+
   end
 end

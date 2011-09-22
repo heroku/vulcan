@@ -37,8 +37,11 @@ app.post('/make', function(request, response, next) {
       if (err) {
         next(err);
       } else {
-        var id = uuid();
-        var doc = db.save(id, {}, function(err, doc) {
+        var id      = uuid();
+        var command = fields.command;
+        var prefix  = fields.prefix;
+
+        var doc = db.save(id, { command:command, prefix:prefix }, function(err, doc) {
           console.log('err: %s', sys.inspect(err));
           console.log('doc: %s', sys.inspect(doc));
 
@@ -49,18 +52,12 @@ app.post('/make', function(request, response, next) {
             'application/octet-stream',
             fs.createReadStream(files.code.path),
             function(err, data) {
-              var command = fields.command;
-              var prefix  = fields.prefix;
-
-              var make_args = [ id, command, prefix ].map(function(arg) {
-                return('"' + arg + '"');
-              }).join(' ');
-
-              var ls = spawner.spawn('bin/make ' + make_args, function(err) {
+              var ls = spawner.spawn('bin/make ' + id, function(err) {
                 console.log('couldnt spawn: ' + err);
               });
 
               ls.on('error', function(error) {
+                response.writeHead(500);
                 console.log('error: ' + error);
                 response.end();
               });
@@ -70,11 +67,12 @@ app.post('/make', function(request, response, next) {
               });
 
               ls.on('exit', function(code) {
-                response.header('X-Make-Id', id);
                 response.end();
               });
             }
           );
+
+          response.header('X-Make-Id', id);
         });
       }
     });
