@@ -83,7 +83,7 @@ create a build server on Heroku
         system "env BUNDLE_GEMFILE= heroku create #{name} -s cedar"
       end
     end
-    write_config :ap=> name, :host => "#{name}.herokuapp.com", :secret => secret
+    write_config :app => name, :host => "#{name}.herokuapp.com", :secret => secret
     update
   end
 
