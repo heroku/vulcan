@@ -57,9 +57,12 @@ if no COMMAND is specified, a sensible default will be chosen for you
 
         puts ">> Downloading build artifacts to: #{output}"
 
+        output_url = "#{server}/output/#{response["X-Make-Id"]}"
+        puts "   (available at #{output_url})"
+
         File.open(output, "w") do |output|
           begin
-            output.print RestClient.get("#{server}/output/#{response["X-Make-Id"]}")
+            output.print RestClient.get(output_url)
           rescue Exception => ex
             puts ex.inspect
           end
