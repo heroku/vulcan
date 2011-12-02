@@ -34,62 +34,59 @@ app.post('/make', function(request, response, next) {
     // form handler
     request.form.complete(function(err, fields, files) {
 
-      // if there's an error
-      if (err) {
+      // if there's an error, pass through to the next handler
+      if (err) { return next(err); }
 
-        // pass through to the next handler
-        next(err);
-
+      // match on the shared secret
+      if (fields.secret != process.env.SECRET) {
+        response.write('invalid secret');
+        response.send(500);
       } else {
 
-        // match on the shared secret
-        if (fields.secret != process.env.SECRET) {
-          response.write('invalid secret');
-          response.send(500);
-        } else {
+        var id      = uuid();
+        var command = fields.command;
+        var prefix  = fields.prefix;
 
-          var id      = uuid();
-          var command = fields.command;
-          var prefix  = fields.prefix;
+        // create a couchdb documents for this build
+        db.save(id, { command:command, prefix:prefix }, function(err, doc) {
+          if (err) { return next(err); }
 
-          // create a couchdb documents for this build
-          var doc = db.save(id, { command:command, prefix:prefix }, function(err, doc) {
+          // save the input tarball as an attachment
+          db.saveAttachment(
+            doc.id,
+            doc.rev,
+            'input',
+            'application/octet-stream',
+            fs.createReadStream(files.code.path),
+            function(err, data) {
+              if (err) { return next(err); }
 
-            // save the input tarball as an attachment
-            db.saveAttachment(
-              doc.id,
-              doc.rev,
-              'input',
-              'application/octet-stream',
-              fs.createReadStream(files.code.path),
-              function(err, data) {
+              // spawn bin/make with this build id
+              var ls = spawner.spawn('bin/make ' + id, function(err) {
+                response.write('could not spawn: ' + err);
+                response.send(500);
+              });
 
-                // spawn bin/make with this build id
-                var ls = spawner.spawn('bin/make ' + id, function(err) {
-                  response.write('could not spawn: ' + err);
-                  response.send(500);
-                });
+              ls.on('error', function(error) {
+                response.write('error: ' + err);
+                response.send(500);
+              });
 
-                ls.on('error', function(error) {
-                  response.write('error: ' + err);
-                  response.send(500);
-                });
+              ls.on('data', function(data) {
+                response.write(data);
+              });
 
-                ls.on('data', function(data) {
-                  response.write(data);
-                });
+              ls.on('exit', function(code) {
+                response.end();
+              });
+            }
+          );
 
-                ls.on('exit', function(code) {
-                  response.end();
-                });
-              }
-            );
-
-            // return the build id as a header
-            response.header('X-Make-Id', id);
-          });
-        }
+          // return the build id as a header
+          response.header('X-Make-Id', id);
+        });
       }
+      
     });
   }
 });
