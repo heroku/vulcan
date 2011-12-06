@@ -10,7 +10,7 @@ require "yaml"
 class Vulcan::CLI < Thor
 
   desc "build", <<-DESC
-build a piece of software for the heroku cloud using COMMANd as a build command
+build a piece of software for the heroku cloud using COMMAND as a build command
 if no COMMAND is specified, a sensible default will be chosen for you
 
   DESC
@@ -94,7 +94,7 @@ update the build server
   DESC
 
   def update
-    error "no apyet, create first" unless config[:app]
+    error "no app yet, create first" unless config[:app]
 
     FileUtils.mkdir_p File.expand_path("~/.heroku/plugins/heroku-credentials")
 
