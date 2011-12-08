@@ -3,7 +3,7 @@
 require "net/http/post/multipart"
 require "tmpdir"
 require "uri"
-require "vulcan/cli"
+require File.expand_path("#{File.dirname(__FILE__)}/../lib/vulcan/cli")
 
 Vulcan::CLI.start
 
