@@ -106,6 +106,11 @@ update the build server
           end
         end
         class Heroku::Command::Credentials < Heroku::Command::Base
+
+          # credentials
+          #
+          # list your api key
+          #
           def index
             puts Heroku::Auth.api_key
           end
