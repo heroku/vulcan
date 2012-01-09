@@ -8,5 +8,9 @@
     "knox",
     "node-uuid",
     "restler"
-  ]
+  ],
+  "engines": {
+    "node": ">= 0.4.7 < 0.7.0",
+    "npm": ">= 1.0.0"
+  }
 }
