@@ -62,7 +62,8 @@ var Spawner = function(env) {
     restler.post('https://api.heroku.com/apps/' + app + '/ps', {
       headers: {
         'Authorization': auth,
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'User-Agent': 'heroku-gem/2.5'
       },
       data: {
         attach: true,
