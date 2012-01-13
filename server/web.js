@@ -68,7 +68,7 @@ app.post('/make', function(request, response, next) {
               });
 
               ls.on('error', function(error) {
-                response.write('error: ' + err);
+                response.write('error: ' + error);
                 response.send(500);
               });
 
@@ -86,7 +86,7 @@ app.post('/make', function(request, response, next) {
           response.header('X-Make-Id', id);
         });
       }
-      
+
     });
   }
 });
