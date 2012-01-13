@@ -68,7 +68,7 @@ app.post('/make', function(request, response, next) {
               });
 
               ls.on('error', function(error) {
-                response.write('error: ' + error);
+                response.write('error: ' + require('sys').inspect(error));
                 response.send(500);
               });
 
