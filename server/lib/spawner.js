@@ -73,10 +73,14 @@ var Spawner = function(env) {
     }).on('success', function(data) {
 
       var url = require('url').parse(data.rendezvous_url);
-      var rendezvous = new net.Socket();
 
-      rendezvous.connect(url.port, url.hostname, function() {
-        rendezvous.write(url.pathname.substring(1) + '\n');
+      var rendezvous = tls.connect(url.port, url.hostname, function() {
+        if (rendezvous.authorized) {
+          console.log('valid socket');
+          rendezvous.write(url.pathname.substring(1) + '\n');
+        } else {
+          console.log('invalid socket');
+        }
       });
 
       rendezvous.on('data', function(data) {
