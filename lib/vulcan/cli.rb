@@ -69,6 +69,8 @@ if no COMMAND is specified, a sensible default will be chosen for you
         end
       end
     end
+  rescue Interrupt
+    error "Aborted by user"
   rescue Errno::EPIPE
     error "Could not connect to build server: #{server}"
   end
