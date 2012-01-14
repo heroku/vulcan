@@ -128,6 +128,8 @@ update the build server
         api_key = %x{ env BUNDLE_GEMFILE= heroku credentials 2>&1 }.chomp
         error "invalid api key detected, try running `heroku credentials`" if api_key =~ / /
 
+        %x{ env BUNDLE_GEMFILE= heroku config:add BUILDPACK_URL=https://github.com/heroku/heroku-buildpack-nodejs.git#versions 2>&1 }
+
         system "git init"
         system "git remote add heroku git@heroku.com:#{config[:app]}.git"
         FileUtils.cp_r "#{server_path}/.", "."
@@ -140,7 +142,6 @@ update the build server
         system "git push heroku -f master"
 
         %x{ env BUNDLE_GEMFILE= heroku config:add SECRET=#{config[:secret]} SPAWN_ENV=heroku HEROKU_APP=#{config[:app]} HEROKU_API_KEY=#{api_key} NODE_PATH=lib 2>&1 }
-        %x{ env BUNDLE_GEMFILE= heroku config:add BUILDPACK_URL=https://github.com/heroku/heroku-buildpack-nodejs.git#versions 2>&1 }
         %x{ env BUNDLE_GEMFILE= heroku addons:add cloudant:oxygen }
       end
     end
