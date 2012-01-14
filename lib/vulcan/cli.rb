@@ -140,6 +140,7 @@ update the build server
         system "git push heroku -f master"
 
         %x{ env BUNDLE_GEMFILE= heroku config:add SECRET=#{config[:secret]} SPAWN_ENV=heroku HEROKU_APP=#{config[:app]} HEROKU_API_KEY=#{api_key} 2>&1 }
+        %x{ env BUNDLE_GEMFILE= heroku config:add BUILDPACK_URL=https://github.com/heroku/heroku-buildpack-nodejs.git#versions 2>&1 }
         %x{ env BUNDLE_GEMFILE= heroku addons:add cloudant:oxygen }
       end
     end
