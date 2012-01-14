@@ -35,12 +35,10 @@ Dir.mktmpdir do |dir|
       %x{ tar czf #{dir}/output.tgz * 2>&1 }
     end
 
-    retries = 0
     begin
       doc.put_attachment("output", File.open("#{dir}/output.tgz"))
     rescue RestClient::Conflict
-      retries += 1
-      retry if retries < 3
+      # temporarily work around problem with bigcouch
     end
 
   end
