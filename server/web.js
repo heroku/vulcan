@@ -1,10 +1,8 @@
-require.paths.unshift(__dirname + '/lib');
-
 var cradle  = require('cradle');
 var express = require('express');
 var fs      = require('fs');
 var spawner = require('spawner').create();
-var sys     = require('sys');
+var util    = require('util');
 var uuid    = require('node-uuid');
 
 var app = express.createServer(
@@ -13,6 +11,14 @@ var app = express.createServer(
   express.session({ secret: process.env.SECRET }),
   require('connect-form')({ keepExtensions: true })
 );
+
+function log_action(uuid, message) {
+  console.log(uuid + ': ' + message);
+}
+
+function log_error(uuid, message) {
+  log_action(uuid, 'ERROR: ' + message);
+}
 
 // connect to couchdb
 var couchdb_url = require('url').parse(process.env.CLOUDANT_URL);
@@ -27,6 +33,7 @@ app.post('/make', function(request, response, next) {
 
   // require a form
   if (! request.form) {
+    console.log('invalid form');
     response.write('invalid form');
     response.send(500);
   } else {
@@ -48,10 +55,12 @@ app.post('/make', function(request, response, next) {
         var prefix  = fields.prefix;
 
         // create a couchdb documents for this build
+        log_action(id, 'saving to couchdb');
         db.save(id, { command:command, prefix:prefix }, function(err, doc) {
-          if (err) { return next(err); }
+          if (err) { log_error(id, util.inspect(err)); return next(err); }
 
           // save the input tarball as an attachment
+          log_action(id, 'saving attachment - [id:' + doc.id + ', rev:' + doc.rev + ']')
           db.saveAttachment(
             doc.id,
             doc.rev,
@@ -59,16 +68,19 @@ app.post('/make', function(request, response, next) {
             'application/octet-stream',
             fs.createReadStream(files.code.path),
             function(err, data) {
-              if (err) { return next(err); }
+              if (err) { log_error(id, util.inspect(err)); return next(err); }
 
               // spawn bin/make with this build id
+              log_action(id, 'spawning build');
               var ls = spawner.spawn('bin/make ' + id, function(err) {
+                log_error(id, 'could not spawn: ' + err);
                 response.write('could not spawn: ' + err);
                 response.send(500);
               });
 
               ls.on('error', function(error) {
-                response.write('error: ' + require('sys').inspect(error));
+                log_error(id, 'spawn error: ' + util.inspect(error));
+                response.write('error: ' + util.inspect(error));
                 response.send(500);
               });
 
@@ -96,6 +108,10 @@ app.get('/output/:id', function(request, response, next) {
 
   // from couchdb
   var stream = db.getAttachment(request.params.id, 'output');
+
+  stream.on('error', function(err) {
+    console.log('download error: ' + err);
+  });
 
   stream.on('data', function(chunk) {
     response.write(chunk, 'binary');
