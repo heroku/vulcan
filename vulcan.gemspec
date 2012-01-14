@@ -17,4 +17,6 @@ Gem::Specification.new do |gem|
   gem.add_dependency "multipart-post", "~> 1.1.3"
   gem.add_dependency "rest-client",    "~> 1.6.7"
   gem.add_dependency "thor",           "~> 0.14.6"
+
+  gem.post_install_message = "Please run 'vulcan update' to update your build server."
 end
