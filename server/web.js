@@ -68,7 +68,14 @@ app.post('/make', function(request, response, next) {
             'application/octet-stream',
             fs.createReadStream(files.code.path),
             function(err, data) {
-              if (err) { log_error(id, util.inspect(err)); return next(err); }
+              if (err) {
+                // work around temporary problem with cloudant and document
+                // conflicts
+                if (err.error != 'conflict') {
+                  log_error(id, err.reason);
+                  return next(err.reason);
+                }
+              }
 
               // spawn bin/make with this build id
               log_action(id, 'spawning build');
