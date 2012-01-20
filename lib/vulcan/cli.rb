@@ -129,7 +129,7 @@ update the build server
         error "invalid api key detected, try running `heroku credentials`" if api_key =~ / /
 
         system "git init"
-        system "git remote add heroku git@heroku.com:#{config[:app]}.git"
+        system "git remote add heroku git@#{heroku_git_domain}:#{config[:app]}.git"
         FileUtils.cp_r "#{server_path}/.", "."
         File.open(".gitignore", "w") do |file|
           file.puts ".env"
@@ -178,6 +178,17 @@ private
 
   def server_path
     File.expand_path("../../../server", __FILE__)
+  end
+  
+  #
+  # heroku_git_domain checks to see if the heroku-accounts plugin is present,
+  # and if so, it will set the domain to the one that matches the credentials
+  # for the currently set account
+  #
+  def heroku_git_domain
+    suffix = %x{ git config heroku.account }
+    suffix = "com" if suffix.nil? or suffix.strip == ""
+    "heroku.#{suffix.strip}"
   end
 
 end
