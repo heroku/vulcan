@@ -29,7 +29,8 @@ Dir.mktmpdir do |dir|
 
     Dir.chdir("input") do
       %x{ tar xzf ../input.tgz 2>&1 }
-      system command
+      doc["output"] = `#{command}`
+      db.save_doc(doc)
     end
 
     Dir.chdir(prefix) do
