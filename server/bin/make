@@ -37,11 +37,7 @@ Dir.mktmpdir do |dir|
         %x{ tar czf #{dir}/output.tgz * 2>&1 }
       end
 
-      begin
-        doc.put_attachment("output", File.open("#{dir}/output.tgz"))
-      rescue RestClient::Conflict
-        # temporarily work around problem with bigcouch
-      end
+      doc.put_attachment("output", File.open("#{dir}/output.tgz"))
     rescue => err
       doc["err"] = err.inspect
       doc["err_backtrace"] = err.backtrace.join("\n")
