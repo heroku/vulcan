@@ -25,6 +25,7 @@ Dir.mktmpdir do |dir|
     end
 
     FileUtils.mkdir_p "input"
+    FileUtils.mkdir_p prefix
 
     Dir.chdir("input") do
       %x{ tar xzf ../input.tgz 2>&1 }
