@@ -113,19 +113,32 @@ app.post('/make', function(request, response, next) {
 // download build output
 app.get('/output/:id', function(request, response, next) {
 
-  // from couchdb
-  var stream = db.getAttachment(request.params.id, 'output');
+  db.get(request.params.id, function(err, doc) {
 
-  stream.on('error', function(err) {
-    console.log('download error: ' + err);
-  });
+    if (err) { return response.send(err, 404); }
 
-  stream.on('data', function(chunk) {
-    response.write(chunk, 'binary');
-  });
+    if (doc.err !== undefined) {
+      response.send({
+        error: "build_failed",
+        msg: doc.err,
+        backtrace: doc.err_backtrace
+      }, 500);
+    } else {
+      // from couchdb
+      var stream = db.getAttachment(request.params.id, 'output');
 
-  stream.on('end', function(chunk) {
-    response.end();
+      stream.on('error', function(err) {
+        console.log('download error: ' + err);
+      });
+
+      stream.on('data', function(chunk) {
+        response.write(chunk, 'binary');
+      });
+
+      stream.on('end', function(chunk) {
+        response.end();
+      });
+    }
   });
 
 });
