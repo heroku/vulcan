@@ -1,4 +1,9 @@
 require "digest/sha1"
+require "heroku/auth"
+require "heroku/command"
+require "heroku/command/base"
+require "heroku/command/help"
+require "heroku/plugin"
 require "net/http/post/multipart"
 require "rest_client"
 require "thor"
@@ -101,32 +106,14 @@ update the build server
   def update
     error "no app yet, create first" unless config[:app]
 
-    FileUtils.mkdir_p File.expand_path("~/.heroku/plugins/heroku-credentials")
-
-    File.open(File.expand_path("~/.heroku/plugins/heroku-credentials/init.rb"), "w") do |file|
-      file.puts <<-CONTENTS
-        class Heroku::Auth
-          def self.api_key
-            Heroku::Client.auth(user, password, host)["api_key"]
-          end
-        end
-        class Heroku::Command::Credentials < Heroku::Command::Base
-
-          # credentials
-          #
-          # list your api key
-          #
-          def index
-            puts Heroku::Auth.api_key
-          end
-        end
-      CONTENTS
-    end
+    # clean up old plugin, can use auth:token now
+    FileUtils.rm_rf(File.expand_path("~/.heroku/plugins/heroku-credentials"))
 
     Dir.mktmpdir do |dir|
       Dir.chdir(dir) do
-        api_key = %x{ env BUNDLE_GEMFILE= heroku credentials 2>&1 }.chomp
-        error "invalid api key detected, try running `heroku credentials`" if api_key =~ / /
+        Heroku::Plugin.load!
+        api_key = Heroku::Auth.api_key
+        error "invalid api key detected, try running `heroku auth:token`" if api_key =~ / /
 
         system "git init"
         system "git remote add heroku git@#{heroku_git_domain}:#{config[:app]}.git"
