@@ -1,9 +1,11 @@
 #!/usr/bin/env ruby
 
+$:.unshift File.expand_path("../../lib", __FILE__)
+
 require "net/http/post/multipart"
 require "tmpdir"
 require "uri"
-require File.expand_path("#{File.dirname(__FILE__)}/../lib/vulcan/cli")
+require "vulcan/cli"
 
 Vulcan::CLI.start
 

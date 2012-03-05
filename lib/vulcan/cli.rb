@@ -123,7 +123,7 @@ update the build server
           file.puts "node_modules"
         end
 
-        %x{ env BUNDLE_GEMFILE= heroku config:add BUILDPACK_URL=https://github.com/heroku/heroku-buildpack-nodejs.git#versions 2>&1 }
+        %x{ env BUNDLE_GEMFILE= heroku config:remove BUILDPACK_URL 2>&1 }
 
         system "git add . >/dev/null"
         system "git commit -m commit >/dev/null"
