@@ -16,30 +16,32 @@ db = CouchRest.database!(ENV["CLOUDANT_URL"] + "/make")
 Dir.mktmpdir do |dir|
   Dir.chdir(dir) do
     doc = db.get(id)
-
-    command = doc["command"]
-    prefix = doc["prefix"]
-
-    File.open("input.tgz", "wb") do |file|
-      file.print doc.fetch_attachment("input")
-    end
-
-    FileUtils.mkdir_p "input"
-
-    Dir.chdir("input") do
-      %x{ tar xzf ../input.tgz 2>&1 }
-      system command
-    end
-
-    Dir.chdir(prefix) do
-      %x{ tar czf #{dir}/output.tgz * 2>&1 }
-    end
-
     begin
-      doc.put_attachment("output", File.open("#{dir}/output.tgz"))
-    rescue RestClient::Conflict
-      # temporarily work around problem with bigcouch
-    end
+      command = doc["command"]
+      prefix = doc["prefix"]
 
+      File.open("input.tgz", "wb") do |file|
+        file.print doc.fetch_attachment("input")
+      end
+
+      FileUtils.mkdir_p "input"
+      FileUtils.mkdir_p prefix
+
+      Dir.chdir("input") do
+        %x{ tar xzf ../input.tgz 2>&1 }
+        doc["output"] = `#{command}`
+        db.save_doc(doc)
+      end
+
+      Dir.chdir(prefix) do
+        %x{ tar czf #{dir}/output.tgz * 2>&1 }
+      end
+
+      doc.put_attachment("output", File.open("#{dir}/output.tgz"))
+    rescue => err
+      doc["err"] = err.inspect
+      doc["err_backtrace"] = err.backtrace.join("\n")
+      db.save_doc(doc)
+    end
   end
 end
