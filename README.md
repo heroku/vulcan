@@ -16,12 +16,13 @@ A build server in the cloud.
       vulcan build
 
     Options:
-      -c, [--command=COMMAND]  # the command to run for compilation
-      -n, [--name=NAME]        # the name of the library (defaults ot the directory name)
-      -o, [--output=OUTPUT]    # output build artifacts to this file
-      -p, [--prefix=PREFIX]    # the build/install --prefix of the software
-      -s, [--source=SOURCE]    # the source directory to build from
-      -v, [--verbose]          # show the full build output
+      -c, [--command=COMMAND]     # the command to run for compilation
+      -n, [--name=NAME]           # the name of the library (defaults to the directory name)
+      -o, [--output=OUTPUT]       # output build artifacts to this file
+      -p, [--prefix=PREFIX]       # the build/install --prefix of the software
+      -s, [--source=SOURCE]       # the source directory to build from
+      -d, [--deps=one two three]  # urls of vulcan compiled libraries to build with
+      -v, [--verbose]             # show the full build output
 
     build a piece of software for the heroku cloud using COMMAND as a build command
     if no COMMAND is specified, a sensible default will be chosen for you
