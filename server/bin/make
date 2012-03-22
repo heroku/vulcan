@@ -10,7 +10,8 @@ id  = ARGV.shift
 require "couchrest"
 require "fileutils"
 require "tmpdir"
-
+require "rest_client"
+ 
 db = CouchRest.database!(ENV["CLOUDANT_URL"] + "/make")
 
 Dir.mktmpdir do |dir|
@@ -19,9 +20,40 @@ Dir.mktmpdir do |dir|
 
     command = doc["command"]
     prefix = doc["prefix"]
+    deps = doc["deps"] || ""
 
     File.open("input.tgz", "wb") do |file|
       file.print doc.fetch_attachment("input")
+    end
+
+    deps.split(",").each_with_index do |dep, index|
+      puts "downloading #{dep}"
+      File.open("dep_#{index}.tgz", "wb") do |file|
+        begin
+          file.print RestClient.get(dep)
+        rescue Exception => ex
+          puts ex.inspect
+        end 
+      end
+    end
+      
+    FileUtils.mkdir_p "deps"
+
+    Dir.chdir("deps") do
+      deps.split(",").each_with_index do |dep, index|
+        %x{ tar xzf ../dep_#{index}.tgz 2>&1 }
+      end
+    end
+
+    unless deps.empty?
+      ENV["LDFLAGS"] ||= ""
+      ENV["LDFLAGS"] += " -L%s/deps/lib" % dir
+
+      ENV["CFLAGS"] ||= ""
+      ENV["CFLAGS"] += " -I%s/deps/include" % dir
+
+      ENV["CXXFLAGS"] ||= ""
+      ENV["CXXFLAGS"] += " -I%s/deps/include" % dir
     end
 
     FileUtils.mkdir_p "input"
