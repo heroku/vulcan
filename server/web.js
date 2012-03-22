@@ -53,10 +53,11 @@ app.post('/make', function(request, response, next) {
         var id      = uuid();
         var command = fields.command;
         var prefix  = fields.prefix;
+        var deps    = fields.deps;
 
         // create a couchdb documents for this build
         log_action(id, 'saving to couchdb');
-        db.save(id, { command:command, prefix:prefix }, function(err, doc) {
+        db.save(id, { command:command, prefix:prefix, deps:deps }, function(err, doc) {
           if (err) { log_error(id, util.inspect(err)); return next(err); }
 
           // save the input tarball as an attachment

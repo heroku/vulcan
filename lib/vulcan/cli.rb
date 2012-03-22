@@ -25,6 +25,7 @@ if no COMMAND is specified, a sensible default will be chosen for you
   method_option :output,  :aliases => "-o", :desc => "output build artifacts to this file"
   method_option :prefix,  :aliases => "-p", :desc => "the build/install --prefix of the software"
   method_option :source,  :aliases => "-s", :desc => "the source directory to build from"
+  method_option :deps,    :aliases => "-d", :desc => "other vulcan compiled libraries to build with"
   method_option :verbose, :aliases => "-v", :desc => "show the full build output", :type => :boolean
 
   def build
@@ -35,6 +36,7 @@ if no COMMAND is specified, a sensible default will be chosen for you
     output  = options[:output]  || "/tmp/#{name}.tgz"
     prefix  = options[:prefix]  || "/app/vendor/#{name}"
     command = options[:command] || "./configure --prefix #{prefix} && make install"
+    deps    = options[:deps]    || ""
     server  = URI.parse(ENV["MAKE_SERVER"] || "http://#{app}.herokuapp.com")
 
     Dir.mktmpdir do |dir|
@@ -47,7 +49,8 @@ if no COMMAND is specified, a sensible default will be chosen for you
           "code" => UploadIO.new(input, "application/octet-stream", "input.tgz"),
           "command" => command,
           "prefix" => prefix,
-          "secret" => config[:secret]
+          "secret" => config[:secret],
+          "deps"   => deps
 
         puts ">> Building with: #{command}"
         response = Net::HTTP.start(server.host, server.port) do |http|
