@@ -53,7 +53,7 @@ A build server in the cloud.
     drwx------  0 u24714 24714       0 Sep 21 20:25 share/man/
     drwx------  0 u24714 24714       0 Sep 21 20:25 share/man/man1/
     -rw-r--r--  0 u24714 24714    5304 Sep 21 20:25 share/man/man1/memcached.1
-    
+
 ### Keep the Build Server Updated
 
     $ vulcan update
