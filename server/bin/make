@@ -20,13 +20,13 @@ Dir.mktmpdir do |dir|
 
     command = doc["command"]
     prefix = doc["prefix"]
-    deps = doc["deps"] || ""
+    deps = doc["deps"] || []
 
     File.open("input.tgz", "wb") do |file|
       file.print doc.fetch_attachment("input")
     end
 
-    deps.split(",").each_with_index do |dep, index|
+    deps.each_with_index do |dep, index|
       puts "downloading #{dep}"
       File.open("dep_#{index}.tgz", "wb") do |file|
         begin
@@ -40,7 +40,7 @@ Dir.mktmpdir do |dir|
     FileUtils.mkdir_p "deps"
 
     Dir.chdir("deps") do
-      deps.split(",").each_with_index do |dep, index|
+      deps.each_with_index do |dep, index|
         %x{ tar xzf ../dep_#{index}.tgz 2>&1 }
       end
     end

@@ -21,11 +21,11 @@ if no COMMAND is specified, a sensible default will be chosen for you
   DESC
 
   method_option :command, :aliases => "-c", :desc => "the command to run for compilation"
-  method_option :name,    :aliases => "-n", :desc => "the name of the library (defaults ot the directory name)"
+  method_option :name,    :aliases => "-n", :desc => "the name of the library (defaults to the directory name)"
   method_option :output,  :aliases => "-o", :desc => "output build artifacts to this file"
   method_option :prefix,  :aliases => "-p", :desc => "the build/install --prefix of the software"
   method_option :source,  :aliases => "-s", :desc => "the source directory to build from"
-  method_option :deps,    :aliases => "-d", :desc => "other vulcan compiled libraries to build with"
+  method_option :deps,    :aliases => "-d", :desc => "urls of vulcan compiled libraries to build with", :type=>:array
   method_option :verbose, :aliases => "-v", :desc => "show the full build output", :type => :boolean
 
   def build
@@ -36,7 +36,7 @@ if no COMMAND is specified, a sensible default will be chosen for you
     output  = options[:output]  || "/tmp/#{name}.tgz"
     prefix  = options[:prefix]  || "/app/vendor/#{name}"
     command = options[:command] || "./configure --prefix #{prefix} && make install"
-    deps    = options[:deps]    || ""
+    deps    = options[:deps]    || []
     server  = URI.parse(ENV["MAKE_SERVER"] || "http://#{app}.herokuapp.com")
 
     Dir.mktmpdir do |dir|

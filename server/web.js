@@ -53,7 +53,7 @@ app.post('/make', function(request, response, next) {
         var id      = uuid();
         var command = fields.command;
         var prefix  = fields.prefix;
-        var deps    = fields.deps;
+        var deps    = JSON.parse(fields.deps);
 
         // create a couchdb documents for this build
         log_action(id, 'saving to couchdb');
