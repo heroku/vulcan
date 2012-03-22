@@ -26,7 +26,7 @@ var couchdb_options = couchdb_url.auth ?
   { auth: { username: couchdb_url.auth.split(':')[0], password: couchdb_url.auth.split(':')[1] }  } :
   { }
 var db = new(cradle.Connection)(couchdb_url.hostname, couchdb_url.port || 5984, couchdb_options).database('make');
-db.create();
+db.create(function(){});
 
 // POST /make starts a build
 app.post('/make', function(request, response, next) {
@@ -53,20 +53,20 @@ app.post('/make', function(request, response, next) {
         var id      = uuid();
         var command = fields.command;
         var prefix  = fields.prefix;
+        var deps    = fields.deps;
 
         // create a couchdb documents for this build
         log_action(id, 'saving to couchdb');
-        db.save(id, { command:command, prefix:prefix }, function(err, doc) {
+        db.save(id, { command:command, prefix:prefix, deps:deps }, function(err, doc) {
           if (err) { log_error(id, util.inspect(err)); return next(err); }
 
           // save the input tarball as an attachment
           log_action(id, 'saving attachment - [id:' + doc.id + ', rev:' + doc.rev + ']')
-          db.saveAttachment(
-            doc.id,
-            doc.rev,
-            'input',
-            'application/octet-stream',
-            fs.createReadStream(files.code.path),
+          fs.createReadStream(files.code.path).pipe(db.saveAttachment(
+            {id: doc.id,
+             rev: doc.rev},
+            {name:'input',
+            'Content-Type': 'application/octet-stream'},
             function(err, data) {
               if (err) {
                 // work around temporary problem with cloudant and document
@@ -99,7 +99,7 @@ app.post('/make', function(request, response, next) {
                 response.end();
               });
             }
-          );
+          ));
 
           // return the build id as a header
           response.header('X-Make-Id', id);
@@ -114,7 +114,7 @@ app.post('/make', function(request, response, next) {
 app.get('/output/:id', function(request, response, next) {
 
   // from couchdb
-  var stream = db.getAttachment(request.params.id, 'output');
+  var stream = db.getAttachment(request.params.id, 'output', function(){});
 
   stream.on('error', function(err) {
     console.log('download error: ' + err);

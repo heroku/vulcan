@@ -1,14 +1,14 @@
 {
   "name":        "heroku-make",
   "version":     "0.0.1",
-  "dependencies": [
-    "connect-form",
-    "cradle",
-    "express",
-    "knox",
-    "node-uuid",
-    "restler"
-  ],
+  "dependencies": {
+    "connect-form": "0.2.x",
+    "cradle": "0.6.x",
+    "express": "2.x.x",
+    "knox": "0.0.x",
+    "node-uuid": "1.x.x",
+    "restler": "2.x.x"
+  },
   "engines": {
     "node": "0.6.x"
   }
