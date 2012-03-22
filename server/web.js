@@ -26,7 +26,7 @@ var couchdb_options = couchdb_url.auth ?
   { auth: { username: couchdb_url.auth.split(':')[0], password: couchdb_url.auth.split(':')[1] }  } :
   { }
 var db = new(cradle.Connection)(couchdb_url.hostname, couchdb_url.port || 5984, couchdb_options).database('make');
-db.create();
+db.create(function(){});
 
 // POST /make starts a build
 app.post('/make', function(request, response, next) {
