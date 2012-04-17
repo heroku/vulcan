@@ -123,7 +123,6 @@ update the build server
         FileUtils.cp_r "#{server_path}/.", "."
         File.open(".gitignore", "w") do |file|
           file.puts ".env"
-          file.puts "node_modules"
         end
 
         %x{ env BUNDLE_GEMFILE= heroku config:remove BUILDPACK_URL 2>&1 }
@@ -169,7 +168,7 @@ private
   def server_path
     File.expand_path("../../../server", __FILE__)
   end
-  
+
   #
   # heroku_git_domain checks to see if the heroku-accounts plugin is present,
   # and if so, it will set the domain to the one that matches the credentials
