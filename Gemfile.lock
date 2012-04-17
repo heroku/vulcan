@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    vulcan (0.5.1)
+    vulcan (0.6.0)
       heroku (~> 2.20.0)
       multipart-post (~> 1.1.3)
       rest-client (~> 1.6.7)
@@ -16,9 +16,9 @@ GEM
       rest-client (~> 1.6.1)
       rubyzip
       term-ansicolor (~> 1.0.5)
-    launchy (2.0.5)
+    launchy (2.1.0)
       addressable (~> 2.2.6)
-    mime-types (1.17.2)
+    mime-types (1.18)
     multipart-post (1.1.4)
     rest-client (1.6.7)
       mime-types (>= 1.16)
