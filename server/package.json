@@ -10,6 +10,7 @@
     "restler": "2.x.x"
   },
   "engines": {
-    "node": "0.6.x"
+    "node": "0.6.12",
+    "npm": "1.1.4"
   }
 }
