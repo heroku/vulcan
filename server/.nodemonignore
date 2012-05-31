@@ -1,0 +1,5 @@
+.git
+*.swp
+public/*
+stylus/*
+views/*

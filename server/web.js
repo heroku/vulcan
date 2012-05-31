@@ -54,9 +54,18 @@ app.post('/make', function(request, response, next) {
         var command = fields.command;
         var prefix  = fields.prefix;
         var deps    = [];
+
         if (fields.deps) {
           deps = JSON.parse(fields.deps);
         }
+
+        // return the build id as a header
+        response.header('X-Make-Id', id);
+
+        // send data as a keepalive
+        setInterval(function() {
+          response.write(String.fromCharCode(0) + String.fromCharCode(10));
+        }, 1000);
 
         // create a couchdb documents for this build
         log_action(id, 'saving to couchdb');
@@ -71,6 +80,12 @@ app.post('/make', function(request, response, next) {
             {name:'input',
             'Content-Type': 'application/octet-stream'},
             function(err, data) {
+
+              // finish uploading message
+              response.write('done\n');
+
+              response.write('Building with: ' + command + '\n');
+
               if (err) {
                 // work around temporary problem with cloudant and document
                 // conflicts
@@ -103,9 +118,6 @@ app.post('/make', function(request, response, next) {
               });
             }
           ));
-
-          // return the build id as a header
-          response.header('X-Make-Id', id);
         });
       }
 

@@ -37,13 +37,13 @@ if no COMMAND is specified, a sensible default will be chosen for you
     prefix  = options[:prefix]  || "/app/vendor/#{name}"
     command = options[:command] || "./configure --prefix #{prefix} && make install"
     deps    = options[:deps]    || []
-    server  = URI.parse(ENV["MAKE_SERVER"] || "http://#{app}.herokuapp.com")
+    server  = URI.parse(ENV["VULCAN_HOST"] || "http://#{app}.herokuapp.com")
 
     Dir.mktmpdir do |dir|
-      puts ">> Packaging local directory"
-      %x{ cd #{source} && tar czvf #{dir}/input.tgz . 2>&1 }
+      action "Packaging local directory" do
+        %x{ cd #{source} && tar czvf #{dir}/input.tgz . 2>&1 }
+      end
 
-      puts ">> Uploading code for build"
       File.open("#{dir}/input.tgz", "r") do |input|
         request = Net::HTTP::Post::Multipart.new "/make",
           "code" => UploadIO.new(input, "application/octet-stream", "input.tgz"),
@@ -52,11 +52,13 @@ if no COMMAND is specified, a sensible default will be chosen for you
           "secret" => config[:secret],
           "deps"   => deps
 
-        puts ">> Building with: #{command}"
+        print "Uploading source package... "
         response = Net::HTTP.start(server.host, server.port) do |http|
           http.request(request) do |response|
             response.read_body do |chunk|
-              print chunk if options[:verbose]
+              unless chunk == 0.chr + "\n"
+                print chunk if options[:verbose]
+              end
             end
           end
         end
@@ -125,19 +127,27 @@ update the build server
           file.puts ".env"
         end
 
-        %x{ env BUNDLE_GEMFILE= heroku config:remove BUILDPACK_URL 2>&1 }
-
         system "git add . >/dev/null"
         system "git commit -m commit >/dev/null"
         system "git push heroku -f master"
 
-        %x{ env BUNDLE_GEMFILE= heroku config:add SECRET=#{config[:secret]} SPAWN_ENV=heroku HEROKU_APP=#{config[:app]} HEROKU_API_KEY=#{api_key} NODE_PATH=lib 2>&1 }
-        %x{ env BUNDLE_GEMFILE= heroku addons:add cloudant:oxygen }
+        heroku "config:add SECRET=#{config[:secret]} SPAWN_ENV=heroku HEROKU_APP=#{config[:app]} HEROKU_API_KEY=#{api_key} NODE_PATH=lib"
+        heroku "addons:add cloudant:oxygen"
       end
     end
   end
 
 private
+
+  def action(message)
+    print "#{message}... "
+    yield
+    puts "done"
+  end
+
+  def heroku(command)
+    %x{ env BUNDLE_GEMFILE= heroku #{command} 2>&1 }
+  end
 
   def config_file
     File.expand_path("~/.vulcan")

@@ -112,7 +112,7 @@ You can check if a database exists with the `exists()` method.
 
 ``` js
   db.get('vader', function (err, doc) {
-      sys.puts(doc);
+      console.log(doc);
   });
 ```
 
@@ -129,8 +129,7 @@ Cradle is also able to fetch multiple documents if you have a list of ids, just 
 ``` js
   db.view('characters/all', function (err, res) {
       res.forEach(function (row) {
-          sys.puts(row.name + " is on the " +
-                   row.force + " side of the force.");
+          console.log("%s is on the %s side of the force.", row.name, row.force);
       });
   });
 ```
@@ -331,18 +330,17 @@ the affected documents, simply pass `include_docs: true` in the options.
 
 ### Streaming #
 
-You can also *stream* changes, by calling `db.changes` without the callback:
+You can also *stream* changes, by calling `db.changes` without the callback. This API uses the **excellent** [follow][0] library from [IrisCouch][1]:
 
 ``` js
-  db.changes({ since: 42 }).on('response', function (res) {
-      res.on('data', function (change) {
-          console.log(change);
-      });
-      res.on('end', function () { ... });
+  var feed = db.changes({ since: 42 });
+  
+  feed.on('change', function (change) {
+      console.log(change);
   });
 ```
 
-In this case, it returns an `EventEmitter`, which behaves very similarly to node's `Stream` API.
+In this case, it returns an instance of `follow.Feed`, which behaves very similarly to node's `EventEmitter` API. For full documentation on the options available to you when monitoring CouchDB with `.changes()` see the [follow documentation][0].
 
 
 Other API methods
@@ -375,3 +373,5 @@ Other API methods
 - `viewCleanup()`: Cleanup old view data
 - `replicate(target, options)`: Replicate this database to `target`.
 
+[0]: https://github.com/iriscouch/follow
+[1]: http://iriscouch.com
