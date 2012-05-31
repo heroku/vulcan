@@ -19,7 +19,7 @@ A build server in the cloud.
       -c, [--command=COMMAND]     # the command to run for compilation
       -n, [--name=NAME]           # the name of the library (defaults to the directory name)
       -o, [--output=OUTPUT]       # output build artifacts to this file
-      -p, [--prefix=PREFIX]       # the build/install --prefix of the software
+      -p, [--prefix=PREFIX]       # vulcan will look in this path for the compiled artifacts
       -s, [--source=SOURCE]       # the source directory to build from
       -d, [--deps=one two three]  # urls of vulcan compiled libraries to build with
       -v, [--verbose]             # show the full build output
