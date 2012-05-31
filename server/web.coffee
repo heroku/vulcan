@@ -45,11 +45,10 @@ app.post "/make", (req, res, next) ->
         res.write "Building with: #{command}\n"
         log.info  "spawning build"
 
-        env =
+        make = spawner.spawn "bin/make \"#{id}\"", env:
           CLOUDANT_URL: process.env.CLOUDANT_URL
           PATH: process.env.PATH
 
-        make = spawner.spawn "bin/make \"#{id}\"", env:env
         make.on "error", (err)  -> log.error(err)
         make.on "data",  (data) -> res.write data
         make.on "exit",  (code) -> res.end())
