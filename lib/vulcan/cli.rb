@@ -42,6 +42,7 @@ if no COMMAND is specified, a sensible default will be chosen for you
     Dir.mktmpdir do |dir|
       action "Packaging local directory" do
         %x{ cd #{source} && tar czvf #{dir}/input.tgz . 2>&1 }
+        print " (#{(File.size("#{dir}/input.tgz") / 1024 / 1024} MB) "
       end
 
       File.open("#{dir}/input.tgz", "r") do |input|
