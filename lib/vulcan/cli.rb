@@ -131,7 +131,7 @@ update the build server
         system "git commit -m commit >/dev/null"
         system "git push heroku -f master"
 
-        heroku "config:add SECRET=#{config[:secret]} SPAWN_ENV=heroku HEROKU_APP=#{config[:app]} HEROKU_API_KEY=#{api_key} NODE_PATH=lib"
+        heroku "config:add SECRET=#{config[:secret]} SPAWN_ENV=heroku HEROKU_APP=#{config[:app]} HEROKU_API_KEY=#{api_key} NODE_PATH=lib NODE_ENV=production"
         heroku "addons:add cloudant:oxygen"
       end
     end

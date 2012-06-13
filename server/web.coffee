@@ -11,8 +11,7 @@ db = require("cloudant").connect("make")
 app = express.createServer(
   express.logger()
   express.cookieParser()
-  express.bodyParser()
-  express.session(secret:process.env.SECRET))
+  express.bodyParser())
 
 app.post "/make", (req, res, next) ->
   id      = uuid()
