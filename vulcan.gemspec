@@ -7,7 +7,7 @@ Gem::Specification.new do |gem|
 
   gem.author      = "David Dollar"
   gem.email       = "ddollar@gmail.com"
-  gem.homepage    = "http://vulcan.com/"
+  gem.homepage    = "https://github.com/heroku/vulcan"
   gem.summary     = "Build software in the cloud"
   gem.description = gem.summary
   gem.executables = "vulcan"
