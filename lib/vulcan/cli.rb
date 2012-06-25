@@ -44,12 +44,12 @@ if no COMMAND is specified, a sensible default will be chosen for you
     Dir.mktmpdir do |dir|
       unless source_is_url
         input_tgz = "#{dir}/input.tgz"
-        if source.match(/.tgz$/)
-          input_tgz = source
-        else
+        if File.directory?(source)
           action "Packaging local directory" do
             %x{ cd #{source} && tar czvf #{input_tgz} . 2>&1 }
           end
+        else
+          input_tgz = source
         end
         input = File.open(input_tgz, "r")
       end
