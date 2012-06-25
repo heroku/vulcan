@@ -50,7 +50,7 @@ app.post "/make", (req, res, next) ->
 
         make.on "error", (err)  -> log.error(err)
         make.on "data",  (data) -> res.write data
-        make.on "exit",  (code) -> res.end())
+        make.on "end",   (code) -> res.end())
 
 app.get "/output/:id", (req, res, next) ->
   log    = logger.init(res, next, req.params.id)
