@@ -32,7 +32,7 @@ if no COMMAND is specified, a sensible default will be chosen for you
     app = read_config[:app] || "need a server first, use vulcan create"
 
     source  = options[:source]  || Dir.pwd
-    name    = options[:name]    || File.basename(source)
+    name    = options[:name]    || File.basename(source, File.extname(source))
     output  = options[:output]  || "/tmp/#{name}.tgz"
     prefix  = options[:prefix]  || "/app/vendor/#{name}"
     command = options[:command] || "./configure --prefix #{prefix} && make install"
