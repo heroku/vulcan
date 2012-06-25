@@ -10,6 +10,7 @@ require "thor"
 require "tmpdir"
 require "uri"
 require "vulcan"
+require "vulcan/recipe"
 require "yaml"
 
 class Vulcan::CLI < Thor
@@ -135,6 +136,26 @@ update the build server
         heroku "addons:add cloudant:oxygen"
       end
     end
+  end
+
+  desc "recipe", "build a recipe"
+
+  def recipe(recipe, prefix)
+    load recipe
+    Vulcan::Recipe.recipes.each do |recipe|
+      if options[:version]
+        version = recipe.versions[options[:version]] || raise("no such version: #{options[:version]}")
+        puts "compiling: #{version}"
+        version.build_version prefix
+      else
+        recipe.each_version do |version|
+          puts "compiling: #{version}"
+          version.build_version prefix
+        end
+      end
+    end
+  rescue StandardError => ex
+    puts ex.message
   end
 
 private
