@@ -39,48 +39,64 @@ if no COMMAND is specified, a sensible default will be chosen for you
     deps    = options[:deps]    || []
     server  = URI.parse(ENV["VULCAN_HOST"] || "http://#{app}.herokuapp.com")
 
+    source_is_url = URI.parse(source).scheme
+
     Dir.mktmpdir do |dir|
-      input_tgz = "#{dir}/input.tgz"
-      if source.match(/.tgz$/)
-        input_tgz = source
-      else
-        action "Packaging local directory" do
-          %x{ cd #{source} && tar czvf #{input_tgz} . 2>&1 }
+      unless source_is_url
+        input_tgz = "#{dir}/input.tgz"
+        if source.match(/.tgz$/)
+          input_tgz = source
+        else
+          action "Packaging local directory" do
+            %x{ cd #{source} && tar czvf #{input_tgz} . 2>&1 }
+          end
         end
+        input = File.open(input_tgz, "r")
       end
 
-      File.open(input_tgz, "r") do |input|
-        request = Net::HTTP::Post::Multipart.new "/make",
-          "code" => UploadIO.new(input, "application/octet-stream", "input.tgz"),
-          "command" => command,
-          "prefix" => prefix,
-          "secret" => config[:secret],
-          "deps"   => deps
+      make_options = {
+        "command" => command,
+        "prefix"  => prefix,
+        "secret"  => config[:secret],
+        "deps"    => deps
+      }
 
+      if source_is_url
+        make_options["code_url"] = source
+      else
+        make_options["code"] = UploadIO.new(input, "application/octet-stream", "input.tgz")
+      end
+
+      request = Net::HTTP::Post::Multipart.new "/make", make_options
+
+      if source_is_url
+        print "Initializing build... "
+      else
         print "Uploading source package... "
-        response = Net::HTTP.start(server.host, server.port) do |http|
-          http.request(request) do |response|
-            response.read_body do |chunk|
-              unless chunk == 0.chr + "\n"
-                print chunk if options[:verbose]
-              end
+      end
+
+      response = Net::HTTP.start(server.host, server.port) do |http|
+        http.request(request) do |response|
+          response.read_body do |chunk|
+            unless chunk == 0.chr + "\n"
+              print chunk if options[:verbose]
             end
           end
         end
+      end
 
-        error "Unknown error, no build output given" unless response["X-Make-Id"]
+      error "Unknown error, no build output given" unless response["X-Make-Id"]
 
-        puts ">> Downloading build artifacts to: #{output}"
+      puts ">> Downloading build artifacts to: #{output}"
 
-        output_url = "#{server}/output/#{response["X-Make-Id"]}"
-        puts "   (available at #{output_url})"
+      output_url = "#{server}/output/#{response["X-Make-Id"]}"
+      puts "   (available at #{output_url})"
 
-        File.open(output, "w") do |output|
-          begin
-            output.print RestClient.get(output_url)
-          rescue Exception => ex
-            puts ex.inspect
-          end
+      File.open(output, "w") do |output|
+        begin
+          output.print RestClient.get(output_url)
+        rescue Exception => ex
+          puts ex.inspect
         end
       end
     end
