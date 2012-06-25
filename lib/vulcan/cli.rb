@@ -24,7 +24,7 @@ if no COMMAND is specified, a sensible default will be chosen for you
   method_option :name,    :aliases => "-n", :desc => "the name of the library (defaults to the directory name)"
   method_option :output,  :aliases => "-o", :desc => "output build artifacts to this file"
   method_option :prefix,  :aliases => "-p", :desc => "vulcan will look in this path for the compiled artifacts"
-  method_option :source,  :aliases => "-s", :desc => "the source directory to build from"
+  method_option :source,  :aliases => "-s", :desc => "the source directory to build from or the tgz-ed source archive"
   method_option :deps,    :aliases => "-d", :desc => "urls of vulcan compiled libraries to build with", :type=>:array
   method_option :verbose, :aliases => "-v", :desc => "show the full build output", :type => :boolean
 
@@ -40,11 +40,16 @@ if no COMMAND is specified, a sensible default will be chosen for you
     server  = URI.parse(ENV["VULCAN_HOST"] || "http://#{app}.herokuapp.com")
 
     Dir.mktmpdir do |dir|
-      action "Packaging local directory" do
-        %x{ cd #{source} && tar czvf #{dir}/input.tgz . 2>&1 }
+      input_tgz = "#{dir}/input.tgz"
+      if source.match(/.tgz$/)
+        input_tgz = source
+      else
+        action "Packaging local directory" do
+          %x{ cd #{source} && tar czvf #{input_tgz} . 2>&1 }
+        end
       end
 
-      File.open("#{dir}/input.tgz", "r") do |input|
+      File.open(input_tgz, "r") do |input|
         request = Net::HTTP::Post::Multipart.new "/make",
           "code" => UploadIO.new(input, "application/octet-stream", "input.tgz"),
           "command" => command,
