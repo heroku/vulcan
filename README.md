@@ -2,6 +2,10 @@
 
 A build server in the cloud.
 
+## Install
+
+    $ gem install vulcan
+
 ## Usage
 
     $ vulcan help
