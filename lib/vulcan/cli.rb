@@ -13,7 +13,11 @@ require "vulcan"
 require "yaml"
 
 class Vulcan::CLI < Thor
-
+  
+  def null_dev
+    return test(?e, '/dev/null') ? '/dev/null' : 'NUL:'
+  end
+  
   desc "build", <<-DESC
 build a piece of software for the heroku cloud using COMMAND as a build command
 if no COMMAND is specified, a sensible default will be chosen for you
@@ -28,10 +32,6 @@ if no COMMAND is specified, a sensible default will be chosen for you
   method_option :deps,    :aliases => "-d", :desc => "urls of vulcan compiled libraries to build with", :type=>:array
   method_option :verbose, :aliases => "-v", :desc => "show the full build output", :type => :boolean
   
-  def null_dev
-    return test(?e, '/dev/null') ? '/dev/null' : 'NUL:'
-  end
-
   def build
     app = read_config[:app] || "need a server first, use vulcan create"
 
