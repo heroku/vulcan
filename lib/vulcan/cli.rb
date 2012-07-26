@@ -14,10 +14,6 @@ require "yaml"
 
 class Vulcan::CLI < Thor
   
-  def null_dev
-    return test(?e, '/dev/null') ? '/dev/null' : 'NUL:'
-  end
-  
   desc "build", <<-DESC
 build a piece of software for the heroku cloud using COMMAND as a build command
 if no COMMAND is specified, a sensible default will be chosen for you
@@ -163,6 +159,10 @@ update the build server
   end
 
 private
+
+  def null_dev
+    return test(?e, '/dev/null') ? '/dev/null' : 'NUL:'
+  end
 
   def action(message)
     print "#{message}... "
