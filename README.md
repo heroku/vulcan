@@ -35,10 +35,13 @@ A build server in the cloud.
 
 ### Create a Build Server
 
-    $ vulcan create vulcan-david
+    $ app_name=YOUR_APP_NAME_HERE
+    $ vulcan create ${app_name}
     Creating vulcan-david... done, stack is cedar
     http://vulcan-david.herokuapp.com/ | git@heroku.com:vulcan-david.git
     ...
+    $ heroku addons:add cloudant:oxygen -a ${app_name}
+    See this issue: https://github.com/heroku/vulcan/issues/27
 
 ### Build
 
