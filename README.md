@@ -35,6 +35,9 @@ A build server in the cloud.
 
 ### Create a Build Server
 
+You must have a verified Heroku account with your credit card entered to create a build server.
+This is required to add the free Cloudant add-on.
+
     $ vulcan create vulcan-david
     Creating vulcan-david... done, stack is cedar
     http://vulcan-david.herokuapp.com/ | git@heroku.com:vulcan-david.git
