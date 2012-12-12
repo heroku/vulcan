@@ -46,7 +46,7 @@ app.post "/make", (req, res, next) ->
       res.write "done\n"
       res.write "Building with: #{command}\n"
       log.info  "spawning build"
-      make = spawner.spawn "bin/make \"#{id}\"", env:
+      make = spawner.spawn "bin/vulcan-make \"#{id}\"", env:
         CLOUDANT_URL: process.env.CLOUDANT_URL
         PATH: process.env.PATH
       make.on "error", (err)  -> log.error(err)
