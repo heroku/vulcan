@@ -43,6 +43,28 @@ This is required to add the free Cloudant add-on.
     http://vulcan-david.herokuapp.com/ | git@heroku.com:vulcan-david.git
     ...
 
+#### Install the Cloudant Add-On (required)
+
+Vulcan presently requires the Cloudant Add-on.
+
+    heroku addons:add cloudant
+
+```
+Adding cloudant on vulcan-tb-cloud-jobs... failed
+ !    Please verify your account to install this add-on
+ !    For more information, see http://devcenter.heroku.com/categories/billing
+ !    Verify now at https://heroku.com/verify
+```
+
+If you see the above, you need to have a credit card on-file with Heroku to install the Cloudant add-on. Do it and try again.
+
+```
+heroku addons:add cloudant
+Adding cloudant on vulcan-tb-cloud-jobs... done, v12 (free)
+```
+
+You now have a working build environment.
+
 ### Build
 
     $ vulcan build -s ~/Code/memcached -p /tmp/memcached -c "./autogen.sh && ./configure --prefix=/tmp/memcached && make install"
