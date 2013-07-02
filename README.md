@@ -15,6 +15,15 @@ A build server in the cloud.
       vulcan help [TASK]      # Describe available tasks or one specific task
       vulcan update           # update the build server
 
+    $ vulcan help create
+    Usage:
+      vulcan create APP_NAME
+
+    Options:
+      -r, [--region=REGION]  # specify region for this build server to run in
+
+    create a build server on Heroku
+    
     $ vulcan help build
     Usage:
       vulcan build
