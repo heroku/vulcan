@@ -11,6 +11,7 @@ Gem::Specification.new do |gem|
   gem.summary     = "Build software in the cloud"
   gem.description = gem.summary
   gem.executables = "vulcan"
+  gem.license     = "MIT"
 
   gem.files = Dir["**/*"].select { |d| d =~ %r{^(README|bin/|data/|ext/|lib/|server/|spec/|test/)} }
 
