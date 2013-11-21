@@ -1,6 +1,10 @@
-# Vulcan
+# Vulcan [DEPRECATED]
 
 A build server in the cloud.
+
+NOTE:
+The Vulcan build service is no longer maintained or supported, and it's no longer recommended for building binaries.
+Use heroku run instead.
 
 ## Install
 
