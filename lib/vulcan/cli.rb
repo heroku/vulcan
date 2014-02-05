@@ -39,14 +39,21 @@ if no COMMAND is specified, a sensible default will be chosen for you
     deps    = options[:deps]    || []
     server  = URI.parse(ENV["VULCAN_HOST"] || "http://#{app}.herokuapp.com")
 
-    source_is_url = URI.parse(source).scheme
+    begin
+      source_is_url = URI.parse(source).scheme
+    rescue URI::InvalidURIError
+      source_is_url = false
+    end
 
     Dir.mktmpdir do |dir|
       unless source_is_url
         input_tgz = "#{dir}/input.tgz"
         if File.directory?(source)
           action "Packaging local directory" do
-            %x{ cd #{source} && tar czvf #{input_tgz} . 2>&1 }
+            output = %x{ cd #{source} && tar czvf #{input_tgz} . 2>&1 }
+          end
+          if not File.exists?(input_tgz)
+            error "Could not create package: '#{output}'"
           end
         else
           input_tgz = source
@@ -148,12 +155,18 @@ update the build server
           file.puts ".env"
         end
 
-        system "git add . >/dev/null"
-        system "git commit -m commit >/dev/null"
+        devnull = '/dev/null'
+        if not File.exists?(devnull) and File.exists?('NUL')
+          devnull = 'NUL'
+        end
+
+        system "git add . >#{devnull}"
+        system "git commit -m commit >#{devnull}"
         system "git push heroku -f master"
 
         heroku "config:add SECRET=#{config[:secret]} SPAWN_ENV=heroku HEROKU_APP=#{config[:app]} HEROKU_API_KEY=#{api_key} NODE_PATH=lib NODE_ENV=production"
         heroku "addons:add cloudant:oxygen"
+
       end
     end
   end
