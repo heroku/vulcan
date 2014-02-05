@@ -111,12 +111,16 @@ create a build server on Heroku
 
   DESC
 
+  method_option :region, :aliases => "-r", :desc => "specify region for this build server to run in"
+
   def create(name)
     secret = Digest::SHA1.hexdigest("--#{rand(10000)}--#{Time.now}--")
 
+    region = options[:region] || "us"
+
     Dir.mktmpdir do |dir|
       Dir.chdir(dir) do
-        system "env BUNDLE_GEMFILE= heroku create #{name} -s cedar"
+        system "env BUNDLE_GEMFILE= heroku create #{name} -s cedar --region #{region}"
       end
     end
     write_config :app => name, :host => "#{name}.herokuapp.com", :secret => secret
