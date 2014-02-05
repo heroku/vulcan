@@ -47,8 +47,11 @@ Dir.mktmpdir do |dir|
 
     unless deps.empty?
       ENV["PATH"] ||= ""
-      ENV["PATH"] += ":%s/deps/bin" % dir    
-      
+      ENV["PATH"] += ":%s/deps/bin" % dir
+
+      ENV["PKG_CONFIG_PATH"] ||= ""
+      ENV["PKG_CONFIG_PATH"] += "%s/deps/lib/pkgconfig" % dir
+
       ENV["LDFLAGS"] ||= ""
       ENV["LDFLAGS"] += " -L%s/deps/lib" % dir
 
