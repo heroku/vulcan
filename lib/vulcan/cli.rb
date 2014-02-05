@@ -13,7 +13,7 @@ require "vulcan"
 require "yaml"
 
 class Vulcan::CLI < Thor
-
+  
   desc "build", <<-DESC
 build a piece of software for the heroku cloud using COMMAND as a build command
 if no COMMAND is specified, a sensible default will be chosen for you
@@ -27,7 +27,7 @@ if no COMMAND is specified, a sensible default will be chosen for you
   method_option :source,  :aliases => "-s", :desc => "directory, tarball, or url containing the source"
   method_option :deps,    :aliases => "-d", :desc => "urls of vulcan compiled libraries to build with", :type=>:array
   method_option :verbose, :aliases => "-v", :desc => "show the full build output", :type => :boolean
-
+  
   def build
     app = read_config[:app] || "need a server first, use vulcan create"
 
@@ -148,8 +148,8 @@ update the build server
           file.puts ".env"
         end
 
-        system "git add . >/dev/null"
-        system "git commit -m commit >/dev/null"
+        system "git add . >" + null_dev
+        system "git commit -m commit >" + null_dev
         system "git push heroku -f master"
 
         heroku "config:add SECRET=#{config[:secret]} SPAWN_ENV=heroku HEROKU_APP=#{config[:app]} HEROKU_API_KEY=#{api_key} NODE_PATH=lib NODE_ENV=production"
@@ -159,6 +159,10 @@ update the build server
   end
 
 private
+
+  def null_dev
+    return test(?e, '/dev/null') ? '/dev/null' : 'NUL:'
+  end
 
   def action(message)
     print "#{message}... "
